@@ -21,9 +21,12 @@ public class MatrixUI extends JFrame {
     private List<Cell> pasoACaminar = new java.util.ArrayList<>();
     private int pasoIndex = 0;
 
-    // NUEVAS variables para ventana resultados
+    // Variables para ventana resultados
     private JFrame resultadosFrame;
     private JTextArea resultadosTextArea;
+
+    // Formato fijo para imprimir encabezado y filas
+    private static final String FORMATO_RESULTADOS = "%-25s | %-25s | %-10s%n";
 
     public MatrixUI() {
         super("Interfaz Gráfica de Matriz");
@@ -58,12 +61,22 @@ public class MatrixUI extends JFrame {
 
                 resultadosTextArea = new JTextArea();
                 resultadosTextArea.setEditable(false);
+                // Agregar encabezado con formato alineado
+                resultadosTextArea.setText(String.format(FORMATO_RESULTADOS, "Algoritmo utilizado", "Celdas Recorridas", "Tiempo(ms)"));
+
                 JScrollPane scrollPane = new JScrollPane(resultadosTextArea);
                 resultadosFrame.add(scrollPane, BorderLayout.CENTER);
 
                 JPanel botonesPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
                 JButton borrarDatosButton = new JButton("Borrar datos");
                 JButton graficarButton = new JButton("Graficar");
+
+                borrarDatosButton.addActionListener(ev -> {
+                    if (resultadosTextArea != null) {
+                        resultadosTextArea.setText(String.format(FORMATO_RESULTADOS, "Algoritmo utilizado", "Celdas Recorridas", "Tiempo(ms)"));
+                    }
+                });
+
                 botonesPanel.add(borrarDatosButton);
                 botonesPanel.add(graficarButton);
 
@@ -306,7 +319,7 @@ public class MatrixUI extends JFrame {
                             }
                         }
                         String algoritmo = (String) algoSelector.getSelectedItem();
-                        String texto = String.format("%s | %d | %d\n", algoritmo, celdasRecorridas, elapsed);
+                        String texto = String.format(FORMATO_RESULTADOS, algoritmo, celdasRecorridas, elapsed);
                         if (resultadosTextArea != null) {
                             resultadosTextArea.append(texto);
                         }
