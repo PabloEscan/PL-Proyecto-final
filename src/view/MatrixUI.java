@@ -21,6 +21,10 @@ public class MatrixUI extends JFrame {
     private List<Cell> pasoACaminar = new java.util.ArrayList<>();
     private int pasoIndex = 0;
 
+    // NUEVAS variables para ventana resultados
+    private JFrame resultadosFrame;
+    private JTextArea resultadosTextArea;
+
     public MatrixUI() {
         super("Interfaz Gráfica de Matriz");
         initMenuBar();
@@ -44,7 +48,32 @@ public class MatrixUI extends JFrame {
         resetItem.addActionListener(e -> createMatrixDialog());
         JMenuItem salirItem = new JMenuItem("Salir");
         salirItem.addActionListener(e -> System.exit(0));
+        JMenuItem verResultadosItem = new JMenuItem("Ver resultados");
+        verResultadosItem.addActionListener(e -> {
+            if (resultadosFrame == null) {
+                resultadosFrame = new JFrame("Resultados guardados");
+                resultadosFrame.setSize(400, 300);
+                resultadosFrame.setLocationRelativeTo(this);
+                resultadosFrame.setLayout(new BorderLayout());
+
+                resultadosTextArea = new JTextArea();
+                resultadosTextArea.setEditable(false);
+                JScrollPane scrollPane = new JScrollPane(resultadosTextArea);
+                resultadosFrame.add(scrollPane, BorderLayout.CENTER);
+
+                JPanel botonesPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+                JButton borrarDatosButton = new JButton("Borrar datos");
+                JButton graficarButton = new JButton("Graficar");
+                botonesPanel.add(borrarDatosButton);
+                botonesPanel.add(graficarButton);
+
+                resultadosFrame.add(botonesPanel, BorderLayout.SOUTH);
+            }
+            resultadosFrame.setVisible(true);
+        });
+
         herramientas.add(resetItem);
+        herramientas.add(verResultadosItem);
         herramientas.add(salirItem);
         menuBar.add(herramientas);
 
@@ -240,9 +269,16 @@ public class MatrixUI extends JFrame {
         setControlsEnabled(false);
 
         new SwingWorker<MazeResult, Cell>() {
+            private long startTime;
+            private int celdasRecorridas = 0;
+
             @Override
             protected MazeResult doInBackground() {
-                Consumer<Cell> consumer = cell -> publish(cell);
+                startTime = System.currentTimeMillis();
+                Consumer<Cell> consumer = cell -> {
+                    publish(cell);
+                    celdasRecorridas++;
+                };
                 MazeSolver solver = getSelectedSolver(consumer);
                 return solver.getPath(grid, startCell, endCell, consumer);
             }
@@ -260,6 +296,7 @@ public class MatrixUI extends JFrame {
             protected void done() {
                 try {
                     MazeResult result = get();
+                    long elapsed = System.currentTimeMillis() - startTime;
                     if (result.getPath() != null && !result.getPath().isEmpty()) {
                         for (Cell pathCell : result.getPath()) {
                             int r = pathCell.getRow();
@@ -267,6 +304,11 @@ public class MatrixUI extends JFrame {
                             if (!cellGrid[r][c].isStart() && !cellGrid[r][c].isEnd()) {
                                 cellGrid[r][c].setBackground(Color.GREEN); // camino final
                             }
+                        }
+                        String algoritmo = (String) algoSelector.getSelectedItem();
+                        String texto = String.format("%s | %d | %d\n", algoritmo, celdasRecorridas, elapsed);
+                        if (resultadosTextArea != null) {
+                            resultadosTextArea.append(texto);
                         }
                     } else {
                         showError(result.getError() != null ? result.getError() : "No se encontró un camino.");
