@@ -3,6 +3,7 @@ package view;
 import controllers.MaseSolverRecursivo;
 import controllers.MazeSolver;
 import controllers.MazeSolverBFS;
+import controllers.MazeSolverDFS;
 import models.Cell;
 import models.MazeResult;
 
@@ -304,18 +305,20 @@ public class MatrixUI extends JFrame {
     }
 
     private MazeSolver getSelectedSolver(java.util.function.Consumer<models.Cell> callback) {
-    String selected = (String) algoSelector.getSelectedItem();
-
-        if ("BFS".equals(selected)) {
-            return new MazeSolverBFS(cellGrid, callback);
-        } else if ("Recursivo".equals(selected) || "Recursivo completo".equals(selected)) {
-            return new MaseSolverRecursivo(cellGrid, callback);
+        String selected = (String) algoSelector.getSelectedItem();
+        switch (selected) {
+            case "BFS":
+                return new MazeSolverBFS(cellGrid, callback);
+            case "DFS":
+                return new MazeSolverDFS(cellGrid, callback);
+            case "Recursivo":
+            case "Recursivo completo":
+            case "Recursivo completo BT":
+                return new MaseSolverRecursivo(cellGrid, callback);
+            default:
+                return new MaseSolverRecursivo(cellGrid, callback);
         }
-
-        // Otros algoritmos no implementados aún...
-        return new MaseSolverRecursivo(cellGrid, callback);
     }
-
 
     private void setControlsEnabled(boolean enabled) {
         for (Component comp : ((JPanel)getContentPane().getComponent(0)).getComponents()) {
