@@ -1,6 +1,7 @@
 package view;
 
 import controllers.MaseSolverRecursivo;
+import controllers.MaseSolverRecursivoCompleto;
 import controllers.MazeSolver;
 import controllers.MazeSolverBFS;
 import controllers.MazeSolverDFS;
@@ -312,9 +313,9 @@ public class MatrixUI extends JFrame {
             case "DFS":
                 return new MazeSolverDFS(cellGrid, callback);
             case "Recursivo":
-            case "Recursivo completo":
-            case "Recursivo completo BT":
                 return new MaseSolverRecursivo(cellGrid, callback);
+            case "Recursivo completo":
+                return new MaseSolverRecursivoCompleto(cellGrid, callback); 
             default:
                 return new MaseSolverRecursivo(cellGrid, callback);
         }
