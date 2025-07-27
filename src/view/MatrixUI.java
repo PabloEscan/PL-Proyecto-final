@@ -1,10 +1,6 @@
 package view;
 
-import controllers.MaseSolverRecursivo;
-import controllers.MaseSolverRecursivoCompleto;
-import controllers.MazeSolver;
-import controllers.MazeSolverBFS;
-import controllers.MazeSolverDFS;
+import controllers.*;
 import models.Cell;
 import models.MazeResult;
 
@@ -42,26 +38,45 @@ public class MatrixUI extends JFrame {
 
     private void initMenuBar() {
         JMenuBar menuBar = new JMenuBar();
+
         JMenu herramientas = new JMenu("Herramientas");
-
-        JMenuItem resetItem = new JMenuItem("Reset");
+        JMenuItem resetItem = new JMenuItem("Reinicio");
         resetItem.addActionListener(e -> createMatrixDialog());
-
         JMenuItem salirItem = new JMenuItem("Salir");
         salirItem.addActionListener(e -> System.exit(0));
-
         herramientas.add(resetItem);
         herramientas.add(salirItem);
-
         menuBar.add(herramientas);
+
+        JMenu ayudaMenu = new JMenu("Ayuda");
+        JMenuItem verAyudaItem = new JMenuItem("Ver ayuda");
+        verAyudaItem.addActionListener(e -> {
+            String mensajeHTML =
+                "<html><body style='width: 300px;'>"
+                + "<h2>Autores</h2>"
+                + "<ul>"
+                + "<li><b>Jaime Ismael Loja Tenesaca</b><br>"
+                + "<font color='blue'>jlojat2@est.ups.edu.ec</font></li><br>"
+                + "<li><b>Guillermo Daniel Cajas Ortega</b><br>"
+                + "<font color='blue'>gcajaso@est.ups.edu.ec</font></li><br>"
+                + "<li><b>Pablo Esteban Escandón Lema</b><br><font color='blue'>pescandonl@est.ups.edu.ec</font></li><br>"
+                + "<li><b>Kevin Andres Paladines Toledo</b><br><font color='blue'>Kpaladinest@est.ups.edu.ec </font></li>"
+                + "</ul></body></html>";
+
+            JOptionPane.showMessageDialog(
+                this,
+                mensajeHTML,
+                "Créditos / Ayuda",
+                JOptionPane.INFORMATION_MESSAGE
+            );
+        });
+        ayudaMenu.add(verAyudaItem);
+        menuBar.add(ayudaMenu);
+
         setJMenuBar(menuBar);
     }
 
     private void initNorthPanel() {
-        JPanel helpPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JButton helpButton = new JButton("Ayuda");
-        helpPanel.add(helpButton);
-
         JPanel topButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         JButton setStartButton = new JButton("Set Start");
         JButton setEndButton = new JButton("Set End");
@@ -75,11 +90,7 @@ public class MatrixUI extends JFrame {
         topButtonPanel.add(setEndButton);
         topButtonPanel.add(toggleWallButton);
 
-        JPanel northPanel = new JPanel(new BorderLayout());
-        northPanel.add(helpPanel, BorderLayout.NORTH);
-        northPanel.add(topButtonPanel, BorderLayout.SOUTH);
-
-        add(northPanel, BorderLayout.NORTH);
+        add(topButtonPanel, BorderLayout.NORTH);
     }
 
     private void initMatrixPanel() {
@@ -236,7 +247,6 @@ public class MatrixUI extends JFrame {
                 return solver.getPath(grid, startCell, endCell, consumer);
             }
 
-
             @Override
             protected void process(List<Cell> chunks) {
                 for (Cell c : chunks) {
@@ -305,7 +315,7 @@ public class MatrixUI extends JFrame {
         }
     }
 
-    private MazeSolver getSelectedSolver(java.util.function.Consumer<models.Cell> callback) {
+    private MazeSolver getSelectedSolver(Consumer<Cell> callback) {
         String selected = (String) algoSelector.getSelectedItem();
         switch (selected) {
             case "BFS":
@@ -313,11 +323,13 @@ public class MatrixUI extends JFrame {
             case "DFS":
                 return new MazeSolverDFS(cellGrid, callback);
             case "Recursivo":
-                return new MaseSolverRecursivo(cellGrid, callback);
+                return new MaseSolverRecursivo();
             case "Recursivo completo":
-                return new MaseSolverRecursivoCompleto(cellGrid, callback); 
+                return new MaseSolverRecursivoCompleto(cellGrid, callback);
+            case "Recursivo completo BT":
+                return new MazeSolverRecursivoBT(cellGrid, callback);
             default:
-                return new MaseSolverRecursivo(cellGrid, callback);
+                return new MaseSolverRecursivo();
         }
     }
 

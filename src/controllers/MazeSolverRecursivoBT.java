@@ -7,11 +7,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class MaseSolverRecursivo implements MazeSolver {
+public class MazeSolverRecursivoBT implements MazeSolver {
 
     private boolean[][] visited;
     private List<Cell> path;
     private Consumer<Cell> exploreCallback;
+
+    public MazeSolverRecursivoBT() {
+    }
+
+    public MazeSolverRecursivoBT(Cell[][] uiGrid, Consumer<Cell> exploreCallback) {
+        this.exploreCallback = exploreCallback;
+    }
 
     @Override
     public MazeResult getPath(boolean[][] grid, Cell start, Cell end) {
@@ -28,7 +35,7 @@ public class MaseSolverRecursivo implements MazeSolver {
             return new MazeResult(path, "Grid vacía");
         }
 
-        boolean found = findPath(grid, start.getRow(), start.getCol(), end);
+        boolean found = backtrack(grid, start.getRow(), start.getCol(), end);
         if (found) {
             return new MazeResult(path, null);
         } else {
@@ -36,32 +43,39 @@ public class MaseSolverRecursivo implements MazeSolver {
         }
     }
 
-    private boolean findPath(boolean[][] grid, int row, int col, Cell end) {
+    private boolean backtrack(boolean[][] grid, int row, int col, Cell end) {
         if (row < 0 || col < 0 || row >= grid.length || col >= grid[0].length) return false;
         if (!grid[row][col] || visited[row][col]) return false;
 
         visited[row][col] = true;
 
-        if (exploreCallback != null) exploreCallback.accept(new Cell(row, col));
+        if (exploreCallback != null) {
+            exploreCallback.accept(new Cell(row, col));
+            try {
+                Thread.sleep(30);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        path.add(new Cell(row, col));
 
         if (row == end.getRow() && col == end.getCol()) {
-            path.add(new Cell(row, col));
             return true;
         }
 
-        // Solo 2 direcciones: Abajo y Derecha
-        int[][] directions = { {1, 0}, {0, 1} };
+        int[][] directions = { {1, 0}, {0, 1}, {-1, 0}, {0, -1} };
 
-        for (int[] d : directions) {
-            int newRow = row + d[0];
-            int newCol = col + d[1];
-
-            if (findPath(grid, newRow, newCol, end)) {
-                path.add(new Cell(row, col));
+        for (int[] dir : directions) {
+            int newRow = row + dir[0];
+            int newCol = col + dir[1];
+            if (backtrack(grid, newRow, newCol, end)) {
                 return true;
             }
         }
 
+        path.remove(path.size() - 1);
         return false;
     }
 }
+
