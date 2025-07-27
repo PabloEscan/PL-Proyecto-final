@@ -31,7 +31,7 @@ public class Cell extends JPanel {
 
     public void setStart(boolean start) {
         isStart = start;
-        if (start) setBackground(Color.RED);
+        if (start) setBackground(Color.GREEN); 
         else if (!isWall && !isEnd) setBackground(Color.LIGHT_GRAY);
     }
 
@@ -43,4 +43,17 @@ public class Cell extends JPanel {
 
     public boolean isStart() { return isStart; }
     public boolean isEnd() { return isEnd; }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Cell)) return false;
+        Cell other = (Cell) obj;
+        return row == other.row && col == other.col;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * row + col;
+    }
 }

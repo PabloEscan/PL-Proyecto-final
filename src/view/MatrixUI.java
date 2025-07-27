@@ -2,12 +2,14 @@ package view;
 
 import controllers.MaseSolverRecursivo;
 import controllers.MazeSolver;
+import controllers.MazeSolverBFS;
 import models.Cell;
 import models.MazeResult;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class MatrixUI extends JFrame {
     private JPanel matrixPanel;
@@ -18,9 +20,12 @@ public class MatrixUI extends JFrame {
     private Cell startCell = null;
     private Cell endCell = null;
 
+    private List<Cell> pasoACaminar = new java.util.ArrayList<>();
+    private int pasoIndex = 0;
+
     public MatrixUI() {
         super("Interfaz Gráfica de Matriz");
-
+        initMenuBar();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         setLocationRelativeTo(null);
@@ -31,6 +36,23 @@ public class MatrixUI extends JFrame {
         initSouthPanel();
 
         createMatrixDialog();
+    }
+
+    private void initMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+        JMenu herramientas = new JMenu("Herramientas");
+
+        JMenuItem resetItem = new JMenuItem("Reset");
+        resetItem.addActionListener(e -> createMatrixDialog());
+
+        JMenuItem salirItem = new JMenuItem("Salir");
+        salirItem.addActionListener(e -> System.exit(0));
+
+        herramientas.add(resetItem);
+        herramientas.add(salirItem);
+
+        menuBar.add(herramientas);
+        setJMenuBar(menuBar);
     }
 
     private void initNorthPanel() {
@@ -68,24 +90,24 @@ public class MatrixUI extends JFrame {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
 
         String[] algorithms = {
-            "Recursivo",
-            "Recursivo completo",
-            "Recursivo completo BT",
-            "BFS",
-            "DFS"
+                "Recursivo",
+                "Recursivo completo",
+                "Recursivo completo BT",
+                "BFS",
+                "DFS"
         };
         algoSelector = new JComboBox<>(algorithms);
 
-        JButton resetButton = new JButton("Reset");
+        JButton solveButton = new JButton("Resolver");
         JButton stepButton = new JButton("Paso a paso");
         JButton clearButton = new JButton("Limpiar");
 
-        resetButton.addActionListener(e -> createMatrixDialog());
+        solveButton.addActionListener(e -> resolverCamino());
+        stepButton.addActionListener(e -> avanzarPasoManual());
         clearButton.addActionListener(e -> clearMatrix());
-        stepButton.addActionListener(e -> solveMazeStepByStep());
 
         bottomPanel.add(algoSelector);
-        bottomPanel.add(resetButton);
+        bottomPanel.add(solveButton);
         bottomPanel.add(stepButton);
         bottomPanel.add(clearButton);
 
@@ -104,9 +126,9 @@ public class MatrixUI extends JFrame {
         dialogPanel.add(colsField);
 
         int result = JOptionPane.showConfirmDialog(
-            this, dialogPanel,
-            "Ingrese dimensiones de la matriz",
-            JOptionPane.OK_CANCEL_OPTION
+                this, dialogPanel,
+                "Ingrese dimensiones de la matriz",
+                JOptionPane.OK_CANCEL_OPTION
         );
 
         if (result == JOptionPane.OK_OPTION) {
@@ -147,12 +169,18 @@ public class MatrixUI extends JFrame {
                                 cell.setWall(!cell.isWall());
                                 break;
                             case "start":
-                                if (startCell != null) startCell.setStart(false);
+                                if (startCell != null) {
+                                    startCell.setStart(false);
+                                    startCell.setBackground(Color.LIGHT_GRAY);
+                                }
                                 startCell = cell;
                                 cell.setStart(true);
                                 break;
                             case "end":
-                                if (endCell != null) endCell.setEnd(false);
+                                if (endCell != null) {
+                                    endCell.setEnd(false);
+                                    endCell.setBackground(Color.LIGHT_GRAY);
+                                }
                                 endCell = cell;
                                 cell.setEnd(true);
                                 break;
@@ -179,9 +207,11 @@ public class MatrixUI extends JFrame {
         }
         startCell = null;
         endCell = null;
+        pasoACaminar.clear();
+        pasoIndex = 0;
     }
 
-    private void solveMazeStepByStep() {
+    private void resolverCamino() {
         if (startCell == null || endCell == null) {
             showError("Seleccione punto de inicio y fin.");
             return;
@@ -198,16 +228,18 @@ public class MatrixUI extends JFrame {
 
         new SwingWorker<MazeResult, Cell>() {
             @Override
-            protected MazeResult doInBackground() throws Exception {
-                MaseSolverRecursivo solver = new MaseSolverRecursivo(cellGrid, this::publish);
-                return solver.getPath(grid, startCell, endCell);
+            protected MazeResult doInBackground() {
+                Consumer<Cell> consumer = cell -> publish(cell);
+                MazeSolver solver = getSelectedSolver(consumer);
+                return solver.getPath(grid, startCell, endCell, consumer);
             }
+
 
             @Override
             protected void process(List<Cell> chunks) {
                 for (Cell c : chunks) {
                     if (!c.isStart() && !c.isEnd()) {
-                        cellGrid[c.getRow()][c.getCol()].setBackground(new Color(255, 99, 71));
+                        cellGrid[c.getRow()][c.getCol()].setBackground(Color.BLUE); // pasos visitados
                     }
                 }
             }
@@ -216,12 +248,12 @@ public class MatrixUI extends JFrame {
             protected void done() {
                 try {
                     MazeResult result = get();
-                    if (result.getPath() != null) {
+                    if (result.getPath() != null && !result.getPath().isEmpty()) {
                         for (Cell pathCell : result.getPath()) {
                             int r = pathCell.getRow();
                             int c = pathCell.getCol();
                             if (!cellGrid[r][c].isStart() && !cellGrid[r][c].isEnd()) {
-                                cellGrid[r][c].setBackground(Color.GREEN);
+                                cellGrid[r][c].setBackground(Color.GREEN); // camino final
                             }
                         }
                     } else {
@@ -236,6 +268,54 @@ public class MatrixUI extends JFrame {
             }
         }.execute();
     }
+
+    private void avanzarPasoManual() {
+        if (pasoACaminar.isEmpty()) {
+            if (startCell == null || endCell == null) {
+                showError("Seleccione punto de inicio y fin.");
+                return;
+            }
+
+            boolean[][] grid = new boolean[cellGrid.length][cellGrid[0].length];
+            for (int r = 0; r < cellGrid.length; r++) {
+                for (int c = 0; c < cellGrid[0].length; c++) {
+                    grid[r][c] = !cellGrid[r][c].isWall();
+                }
+            }
+
+            MazeSolver solver = getSelectedSolver(null);
+            MazeResult result = solver.getPath(grid, startCell, endCell);
+
+            if (result.getPath() != null && !result.getPath().isEmpty()) {
+                pasoACaminar = result.getPath();
+                pasoIndex = 0;
+            } else {
+                showError(result.getError() != null ? result.getError() : "No se encontró un camino.");
+                return;
+            }
+        }
+
+        if (pasoIndex < pasoACaminar.size()) {
+            Cell c = pasoACaminar.get(pasoIndex++);
+            if (!c.equals(startCell) && !c.equals(endCell)) {
+                cellGrid[c.getRow()][c.getCol()].setBackground(Color.GREEN);
+            }
+        }
+    }
+
+    private MazeSolver getSelectedSolver(java.util.function.Consumer<models.Cell> callback) {
+    String selected = (String) algoSelector.getSelectedItem();
+
+        if ("BFS".equals(selected)) {
+            return new MazeSolverBFS(cellGrid, callback);
+        } else if ("Recursivo".equals(selected) || "Recursivo completo".equals(selected)) {
+            return new MaseSolverRecursivo(cellGrid, callback);
+        }
+
+        // Otros algoritmos no implementados aún...
+        return new MaseSolverRecursivo(cellGrid, callback);
+    }
+
 
     private void setControlsEnabled(boolean enabled) {
         for (Component comp : ((JPanel)getContentPane().getComponent(0)).getComponents()) {

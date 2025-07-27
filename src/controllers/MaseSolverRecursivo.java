@@ -24,6 +24,12 @@ public class MaseSolverRecursivo implements MazeSolver {
 
     @Override
     public MazeResult getPath(boolean[][] grid, Cell start, Cell end) {
+        return getPath(grid, start, end, null);
+    }
+
+    @Override
+    public MazeResult getPath(boolean[][] grid, Cell start, Cell end, Consumer<Cell> exploreCallback) {
+        this.exploreCallback = exploreCallback;
         path = new ArrayList<>();
         visited = new boolean[grid.length][grid[0].length];
 
@@ -31,17 +37,18 @@ public class MaseSolverRecursivo implements MazeSolver {
             return new MazeResult(path, "Grid vacía");
         }
 
+        boolean found;
         if (uiGrid != null && exploreCallback != null) {
-            if (findPathStep(grid, start.getRow(), start.getCol(), end)) {
-                return new MazeResult(path, null);
-            }
+            found = findPathStep(grid, start.getRow(), start.getCol(), end);
         } else {
-            if (findPath(grid, start.getRow(), start.getCol(), end)) {
-                return new MazeResult(path, null);
-            }
+            found = findPath(grid, start.getRow(), start.getCol(), end);
         }
 
-        return new MazeResult(null, "No se encontró camino");
+        if (found) {
+            return new MazeResult(path, null);
+        } else {
+            return new MazeResult(null, "No se encontró camino");
+        }
     }
 
     private boolean findPath(boolean[][] grid, int row, int col, Cell end) {
@@ -89,7 +96,9 @@ public class MaseSolverRecursivo implements MazeSolver {
 
         visited[row][col] = true;
 
-        exploreCallback.accept(uiGrid[row][col]);
+        if (exploreCallback != null) {
+            exploreCallback.accept(uiGrid[row][col]);
+        }
 
         if (row == end.getRow() && col == end.getCol()) {
             path.add(new Cell(row, col));
