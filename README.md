@@ -24,7 +24,6 @@ El proyecto tiene como objetivo resolver laberintos de forma automática utiliza
 
 Este entorno permite observar el recorrido de cada algoritmo, su eficiencia y el camino final que logra trazar desde el inicio hasta el objetivo.
 
-
 ---
 
 ## 💡 Propuesta de Solución

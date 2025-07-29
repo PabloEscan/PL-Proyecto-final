@@ -1,4 +1,5 @@
 package controllers;
+
 import models.Cell;
 import models.MazeResult;
 
