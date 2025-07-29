@@ -104,11 +104,11 @@ public class MatrixUI extends JFrame {
                 + "<h2>Autores</h2>"
                 + "<ul>"
                 + "<li><b>Jaime Ismael Loja Tenesaca</b><br>"
-                + "<font color='blue'>jlojat2@est.ups.edu.ec</font></li><br>"
+                + "<font color='blue'>https://github.com/Azkeel10</font></li><br>"
                 + "<li><b>Guillermo Daniel Cajas Ortega</b><br>"
-                + "<font color='blue'>gcajaso@est.ups.edu.ec</font></li><br>"
-                + "<li><b>Pablo Esteban Escandón Lema</b><br><font color='blue'>pescandonl@est.ups.edu.ec</font></li><br>"
-                + "<li><b>Kevin Andres Paladines Toledo</b><br><font color='blue'>Kpaladinest@est.ups.edu.ec </font></li>"
+                + "<font color='blue'>https://github.com/daniellcm</font></li><br>"
+                + "<li><b>Pablo Esteban Escandón Lema</b><br><font color='blue'>https://github.com/PabloEscan</font></li><br>"
+                + "<li><b>Kevin Andres Paladines Toledo</b><br><font color='blue'>https://github.com/kevinpaladines204</font></li>"
                 + "</ul></body></html>";
 
             JOptionPane.showMessageDialog(
@@ -207,6 +207,8 @@ public class MatrixUI extends JFrame {
                 showError("Ingrese números válidos.");
                 createMatrixDialog();
             }
+        } else {
+            System.exit(0);
         }
     }
 
@@ -260,14 +262,16 @@ public class MatrixUI extends JFrame {
     private void clearMatrix() {
         for (int r = 0; r < cellGrid.length; r++) {
             for (int c = 0; c < cellGrid[0].length; c++) {
-                cellGrid[r][c].setWall(false);
-                cellGrid[r][c].setStart(false);
-                cellGrid[r][c].setEnd(false);
-                cellGrid[r][c].setBackground(Color.LIGHT_GRAY);
+                Cell cell = cellGrid[r][c];
+                if (!cell.isWall() && !cell.isStart() && !cell.isEnd()) {
+                    cell.setBackground(Color.LIGHT_GRAY);
+                }
             }
         }
-        startCell = null;
-        endCell = null;
+
+        if (startCell != null) startCell.setBackground(Color.GREEN);
+        if (endCell != null) endCell.setBackground(Color.RED);
+
         pasoACaminar.clear();
         pasoIndex = 0;
     }
@@ -305,9 +309,15 @@ public class MatrixUI extends JFrame {
             @Override
             protected void process(List<Cell> chunks) {
                 for (Cell c : chunks) {
-                    if (!c.isStart() && !c.isEnd()) {
-                        cellGrid[c.getRow()][c.getCol()].setBackground(Color.BLUE); // pasos visitados
+                    if (!c.isStart() && !c.isEnd() && !c.isWall()) {
+                        cellGrid[c.getRow()][c.getCol()].setBackground(Color.BLUE); // visitados
                     }
+                }
+                if (startCell != null) {
+                    startCell.setBackground(Color.GREEN);
+                }
+                if (endCell != null) {
+                    endCell.setBackground(Color.RED);
                 }
             }
 
@@ -318,13 +328,13 @@ public class MatrixUI extends JFrame {
                     long elapsed = System.currentTimeMillis() - startTime;
                     if (result.getPath() != null && !result.getPath().isEmpty()) {
                         for (Cell pathCell : result.getPath()) {
-                            int r = pathCell.getRow();
-                            int c = pathCell.getCol();
-                            
-                            if (!cellGrid[r][c].isStart() && !cellGrid[r][c].isEnd()) {
-                                cellGrid[r][c].setBackground(Color.GREEN); // camino final
-                            }
+                        int r = pathCell.getRow();
+                        int c = pathCell.getCol();
+
+                        if (!cellGrid[r][c].isStart() && !cellGrid[r][c].isEnd() && !cellGrid[r][c].isWall()) {
+                            cellGrid[r][c].setBackground(Color.GREEN); // camino final
                         }
+                    }
                         String algoritmo = (String) algoSelector.getSelectedItem();
                         String texto = String.format(FORMATO_RESULTADOS, algoritmo, celdasRecorridas, elapsed);
                         if (resultadosTextArea != null) {
@@ -340,7 +350,14 @@ public class MatrixUI extends JFrame {
                 } finally {
                     setControlsEnabled(true);
                 }
+                if (startCell != null) {
+                    startCell.setBackground(Color.GREEN);
+                }
+                if (endCell != null) {
+                    endCell.setBackground(Color.RED);
+                }
             }
+            
         }.execute();
     }
 
@@ -470,8 +487,5 @@ public class MatrixUI extends JFrame {
 
     frame.add(panel);
     frame.setVisible(true);
-}
-    
-
-
+    }
 }
