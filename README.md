@@ -62,7 +62,27 @@ Se implementó un sistema basado en el patrón Modelo-Vista-Controlador (MVC), e
 ---
 
 ### 📐 Diagrama UML (simplificado)
-    // falta esto
+```java
+src/
+│
+├── controllers/
+│   ├── MaseSolverRecursivo.java  // Búsqueda recursiva simple (2 direcciones)
+│   ├── MaseSolverRecursivoCompleto.java // Backtracking completo (4 direcciones)
+│   ├── MazeSolver.java // Búsqueda en anchura con cola
+│   ├── MazeSolverBFS.java // Búsqueda en anchura con cola
+│   ├── MazeSolverDFS.java  // Búsqueda en profundidad con pila
+│   └── MazeSolverRecursivoBT.java // Backtracking con poda optimizada
+│
+├── models/
+│   ├── Cell.java // Representa posición en el laberinto
+│   ├── MazeResult.java  // Resultado de la búsqueda (camino o error)
+│   └── ResultadosAlgoritmos.java  // Resultado conjunto de todos los algoritmos
+│
+└── view/
+    ├── MatrixUI.java  // Visualización y control de la interfaz
+    └── App.java  // Punto de entrada para ejecutar la aplicación
+
+```
 ---
 
 ### 🖼️ Capturas de la Interfaz
