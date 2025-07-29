@@ -24,12 +24,23 @@ El proyecto tiene como objetivo resolver laberintos de forma automática utiliza
 
 Este entorno permite observar el recorrido de cada algoritmo, su eficiencia y el camino final que logra trazar desde el inicio hasta el objetivo.
 
-* si quieren aumentele mas informacion
 ---
 
 ## 💡 Propuesta de Solución
 
-    // falta esto
+Se implementó un sistema basado en el patrón Modelo-Vista-Controlador (MVC), en lenguaje Java, con una interfaz gráfica desarrollada en Swing. Se desarrollaron e integraron diversos algoritmos de búsqueda para la resolución de laberintos, cada uno con su propia estrategia de exploración:
+
+- Recursivo con 2 direcciones
+
+- Recursivo con 4 direcciones
+
+- BFS (Breadth-First Search)
+
+- DFS (Depth-First Search)
+
+- Recursivo 4 direcciones con backtraking
+
+El sistema permite además realizar la visualización paso a paso del recorrido y obtener estadísticas como tiempo y número de celdas exploradas.
 ---
 ### 📚 Marco Teórico
 
@@ -121,8 +132,14 @@ public MazeResult getPath(boolean[][] grid, Cell start, Cell end, Consumer<Cell>
  ```
 ---
 ## 📝 Conclusiones
+#### Daniel Cajas:
+En conclusión este proyecto me ayudó a comprender en profundidad cómo diferentes algoritmos de búsqueda abordan la resolución de laberintos, destacando sus ventajas y limitaciones en eficiencia y complejidad. La integración con una interfaz gráfica interactiva permitió visualizar el proceso en tiempo real, lo que facilitó tanto la depuración como la experiencia del usuario. Además, fue una excelente oportunidad para aplicar conceptos de estructuras de datos y programación en Java en un contexto práctico y visual.
 
-    // conclusiones de cada uno de nosotros
+#### Jaime Loja:
+
+#### Kevin Paladines:
+
+#### Pablo Escandón:
 
 --- 
 
