@@ -151,7 +151,7 @@ public class MatrixUI extends JFrame {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
 
         String[] algorithms = {
-                "Recursivo",
+                "Recursivo 2 direcciones",
                 "Recursivo completo",
                 "Recursivo completo BT",
                 "BFS",

@@ -68,9 +68,9 @@ Se implementó un sistema basado en el patrón Modelo-Vista-Controlador (MVC), e
 ### 🖼️ Capturas de la Interfaz
 
 #### 🔸 Ejemplo 1 – Algoritmo: Recursivo 2 direcciones 
-    // Si quieren poner otro metodo cambien los titulos..
-#### 🔸 Ejemplo 2 – Algoritmo: Recursivo 4 direcciones
-
+![alt text](image-1.png)
+#### 🔸 Ejemplo 2 – Algoritmo: BFS (Breadth-First Search)  
+![alt text](image-2.png)
 ---
 
 ### 💻 Código Comentado – Ejemplo: BFS
@@ -133,11 +133,19 @@ public MazeResult getPath(boolean[][] grid, Cell start, Cell end, Consumer<Cell>
 ---
 ## 📝 Conclusiones
 #### Daniel Cajas:
-En conclusión este proyecto me ayudó a comprender en profundidad cómo diferentes algoritmos de búsqueda abordan la resolución de laberintos, destacando sus ventajas y limitaciones en eficiencia y complejidad. La integración con una interfaz gráfica interactiva permitió visualizar el proceso en tiempo real, lo que facilitó tanto la depuración como la experiencia del usuario. Además, fue una excelente oportunidad para aplicar conceptos de estructuras de datos y programación en Java en un contexto práctico y visual.
+Este proyecto me brindó una oportunidad valiosa para profundizar en el funcionamiento práctico de los algoritmos de búsqueda, al aplicarlos en una interfaz visual interactiva. Implementar métodos como BFS, DFS y búsquedas recursivas me permitió entender no solo sus diferencias conceptuales, sino también cómo se comportan en escenarios reales. La experiencia con Java y Swing reforzó mis habilidades en programación orientada a objetos y en estructurar código mediante el patrón MVC, mejorando la claridad y mantenibilidad del proyecto. La animación del recorrido y la retroalimentación visual facilitaron la comprensión teórica y la conexión con la práctica.
+
+Además, al medir el tiempo y las celdas exploradas por cada algoritmo, pude analizar su eficiencia, lo que abre puertas para aplicar estos conocimientos en futuros desarrollos que requieran optimización o procesamiento de grafos.
 
 #### Jaime Loja:
+Se desarrolló y afinó una interfaz gráfica en Java que permite visualizar la solución de laberintos usando diferentes algoritmos. Se integraron correctamente las implementaciones de BFS y búsqueda recursiva para ofrecer varias opciones al usuario, con un sistema de menús y botones que facilitan la interacción, incluyendo la opción de avanzar paso a paso.
 
+Se incorporaron elementos visuales que resaltan las celdas exploradas y el camino final, haciendo la experiencia más intuitiva. Además, se aseguró la compatibilidad entre las clases mediante el uso uniforme del modelo Cell. El sistema está diseñado para incorporar fácilmente nuevos algoritmos, como DFS o backtracking, en futuras versiones.
+
+En resumen, el usuario puede personalizar el laberinto, seleccionar los puntos clave, elegir el algoritmo, y observar claramente el proceso de búsqueda completo o incremental.
 #### Kevin Paladines:
+Este proyecto contribuyó a mi formación al permitirme comparar varias técnicas de búsqueda para un mismo problema, comprendiendo las ventajas y limitaciones de cada una. Esto me ayudó a valorar la importancia de seleccionar el algoritmo más adecuado según el contexto y necesidades del usuario. La adopción del patrón MVC facilitó una mejor organización del código y una interfaz gráfica más clara y funcional, lo que a su vez mejoró la experiencia de desarrollo y uso.
+
 
 #### Pablo Escandón:
 
