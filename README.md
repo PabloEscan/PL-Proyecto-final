@@ -148,7 +148,9 @@ Este proyecto contribuyó a mi formación al permitirme comparar varias técnica
 
 
 #### Pablo Escandón:
+La realización de este proyecto me ayudó a comprender de manera más práctica el funcionamiento de los algoritmos de búsqueda en laberintos. Al implementar y probar diferentes métodos, pude observar las variaciones en el rendimiento y la forma en que cada uno encuentra el camino. Trabajar con la interfaz gráfica en Java me permitió mejorar mis habilidades de programación, especialmente en el manejo del patrón MVC y la interacción entre la lógica del programa y la visualización del proceso.
 
+#### Este aprendizaje no solo fortalece mis bases en estructuras de datos, sino que también me motiva a seguir explorando técnicas más avanzadas para resolver problemas de optimización y búsqueda de rutas.
 --- 
 
 ## 🧭 Recomendaciones y Aplicaciones Futuras
