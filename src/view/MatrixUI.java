@@ -3,13 +3,18 @@ package view;
 import controllers.*;
 import models.Cell;
 import models.MazeResult;
+import models.ResultadosAlgoritmos;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class MatrixUI extends JFrame {
+    private List<ResultadosAlgoritmos> resultadosList = new ArrayList<>();
+
+    
     private JPanel matrixPanel;
     private JComboBox<String> algoSelector;
 
@@ -45,7 +50,8 @@ public class MatrixUI extends JFrame {
 
     private void initMenuBar() {
         JMenuBar menuBar = new JMenuBar();
-
+        JButton graficarButton = new JButton("Graficar");
+        graficarButton.addActionListener(ev -> graficarButton());
         JMenu herramientas = new JMenu("Herramientas");
         JMenuItem resetItem = new JMenuItem("Reinicio");
         resetItem.addActionListener(e -> createMatrixDialog());
@@ -69,7 +75,7 @@ public class MatrixUI extends JFrame {
 
                 JPanel botonesPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
                 JButton borrarDatosButton = new JButton("Borrar datos");
-                JButton graficarButton = new JButton("Graficar");
+                
 
                 borrarDatosButton.addActionListener(ev -> {
                     if (resultadosTextArea != null) {
@@ -314,6 +320,7 @@ public class MatrixUI extends JFrame {
                         for (Cell pathCell : result.getPath()) {
                             int r = pathCell.getRow();
                             int c = pathCell.getCol();
+                            
                             if (!cellGrid[r][c].isStart() && !cellGrid[r][c].isEnd()) {
                                 cellGrid[r][c].setBackground(Color.GREEN); // camino final
                             }
@@ -323,6 +330,7 @@ public class MatrixUI extends JFrame {
                         if (resultadosTextArea != null) {
                             resultadosTextArea.append(texto);
                         }
+                        resultadosList.add(new ResultadosAlgoritmos(algoritmo, celdasRecorridas, elapsed));
                     } else {
                         showError(result.getError() != null ? result.getError() : "No se encontró un camino.");
                     }
@@ -401,4 +409,69 @@ public class MatrixUI extends JFrame {
     private void showError(String message) {
         JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
+
+    private void graficarButton() {
+    if (resultadosList.isEmpty()) {
+        showError("No hay datos para graficar.");
+        return;
+    }
+
+    JFrame frame = new JFrame("Gráfico de Resultados");
+    frame.setSize(600, 400);
+    frame.setLocationRelativeTo(this);
+    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+    JPanel panel = new JPanel() {
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            int width = getWidth();
+            int height = getHeight();
+            int padding = 50;
+            int labelPadding = 50;
+
+            int barWidth = (width - 2 * padding) / resultadosList.size();
+
+            int maxCeldas = resultadosList.stream().mapToInt(ResultadosAlgoritmos::getCeldasRecorridas).max().orElse(1);
+            long maxTiempo = resultadosList.stream().mapToLong(ResultadosAlgoritmos::getTiempoMs).max().orElse(1);
+
+            // Dibujar ejes
+            g.drawLine(padding, height - padding, padding, padding);
+            g.drawLine(padding, height - padding, width - padding, height - padding);
+
+            for (int i = 0; i < resultadosList.size(); i++) {
+                ResultadosAlgoritmos r = resultadosList.get(i);
+
+                int x = padding + i * barWidth + 10;
+                // Altura de barra para celdas
+                int barHeightCeldas = (int) ((double) r.getCeldasRecorridas() / maxCeldas * (height - 2 * padding));
+                g.setColor(Color.BLUE);
+                g.fillRect(x, height - padding - barHeightCeldas, barWidth / 3, barHeightCeldas);
+                g.setColor(Color.BLACK);
+                g.drawString(r.getAlgoritmo(), x, height - padding + 15);
+
+                // Altura barra tiempo
+                int barHeightTiempo = (int) ((double) r.getTiempoMs() / maxTiempo * (height - 2 * padding));
+                g.setColor(Color.RED);
+                g.fillRect(x + barWidth / 3 + 5, height - padding - barHeightTiempo, barWidth / 3, barHeightTiempo);
+            }
+
+            g.setColor(Color.BLUE);
+            g.fillRect(width - padding - 150, padding, 15, 15);
+            g.setColor(Color.BLACK);
+            g.drawString("Celdas Recorridas", width - padding - 130, padding + 12);
+
+            g.setColor(Color.RED);
+            g.fillRect(width - padding - 150, padding + 25, 15, 15);
+            g.setColor(Color.BLACK);
+            g.drawString("Tiempo (ms)", width - padding - 130, padding + 37);
+        }
+    };
+
+    frame.add(panel);
+    frame.setVisible(true);
+}
+    
+
+
 }
