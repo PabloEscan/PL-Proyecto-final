@@ -40,7 +40,7 @@ Se implementó un sistema basado en el patrón Modelo-Vista-Controlador (MVC), e
 
 - Recursivo 4 direcciones con backtraking
 
-El sistema permite además realizar la visualización paso a paso del recorrido y obtener estadísticas como tiempo y número de celdas exploradas.
+#### El sistema permite además realizar la visualización paso a paso del recorrido y obtener estadísticas como tiempo y número de celdas exploradas.
 ---
 ### 📚 Marco Teórico
 
